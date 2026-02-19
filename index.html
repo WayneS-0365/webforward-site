@@ -858,7 +858,7 @@
   <h2 class="section-title">Ready to move your business forward?</h2>
   <p class="section-sub">Fill in the form and we'll be in touch within one business day.</p>
 
-  <form class="contact-form" name="contact" method="POST" data-netlify="true" onsubmit="handleSubmit(event)">
+  <form class="contact-form" name="contact" method="POST" data-netlify="true" onsubmit="handleSubmit(event)" action="/">
     <input type="hidden" name="form-name" value="contact" />
     <div class="form-row">
       <div class="form-group">
@@ -931,21 +931,22 @@
   // Form submit handler
   function handleSubmit(e) {
     e.preventDefault();
+    e.stopPropagation();
     const form = e.target;
     const btn = form.querySelector('.form-submit');
     const sendCopy = form.querySelector('#sendCopy').checked;
     const userEmail = form.querySelector('input[type="email"]').value;
-    const userName = form.querySelector('input[type="text"]').value;
 
     // Show loading state
     btn.textContent = 'Sending...';
     btn.disabled = true;
 
-    // Submit to Netlify
+    // Submit to Netlify via fetch (prevents page redirect)
+    const formData = new FormData(form);
     fetch('/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams(new FormData(form)).toString()
+      body: new URLSearchParams(formData).toString()
     })
     .then(() => {
       // Clear all fields
@@ -978,6 +979,7 @@
         btn.style.background = '';
       }, 4000);
     });
+    return false;
   }
 
   // Simple scroll reveal
