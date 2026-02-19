@@ -931,14 +931,10 @@
     const name = form.querySelector('input[name="name"]').value.trim();
     const email = form.querySelector('input[name="email"]').value.trim();
 
-    // Basic validation
     if (!name || !email) {
       alert('Please fill in your name and email address.');
       return;
     }
-
-    // Submit the form to hidden iframe
-    form.submit();
 
     // Show confirmation immediately
     form.querySelectorAll('input, textarea').forEach(el => el.value = '');
@@ -954,6 +950,16 @@
       btn.style.fontSize = '';
       btn.style.boxShadow = '';
     }, 8000);
+
+    // Send to Formspree silently in background
+    const data = new FormData(form);
+    data.set('name', name);
+    data.set('email', email);
+    fetch('https://formspree.io/f/xlgwlyjo', {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    });
   }
 
   // Simple scroll reveal
@@ -961,4 +967,15 @@
     entries.forEach(e => {
       if (e.isIntersecting) {
         e.target.style.animation = 'fadeUp 0.6s ease forwards';
-        ob
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.service-card, .step, .price-card, .why-item').forEach(el => {
+    el.style.opacity = '0';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
