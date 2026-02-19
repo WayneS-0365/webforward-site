@@ -858,7 +858,8 @@
   <h2 class="section-title">Ready to move your business forward?</h2>
   <p class="section-sub">Fill in the form and we'll be in touch within one business day.</p>
 
-  <form class="contact-form" onsubmit="handleSubmit(event)">
+  <iframe name="hidden-form" style="display:none;"></iframe>
+  <form class="contact-form" action="https://formspree.io/f/xlgwlyjo" method="POST" target="hidden-form" onsubmit="handleSubmit(this)">
     <div class="form-row">
       <div class="form-group">
         <label>Your Name</label>
@@ -923,23 +924,10 @@
     a.addEventListener('click', () => menu.classList.remove('open'));
   });
 
-  // Form submit handler - instant confirmation
-  function handleSubmit(e) {
-    e.preventDefault();
-    const form = e.target;
+  // Form submit handler
+  function handleSubmit(form) {
     const btn = form.querySelector('.form-submit');
-
-    btn.textContent = 'Sending...';
-    btn.disabled = true;
-
-    // Send to Formspree in background
-    fetch('https://formspree.io/f/xlgwlyjo', {
-      method: 'POST',
-      body: new FormData(form),
-      headers: { 'Accept': 'application/json' }
-    });
-
-    // Clear fields and show confirmation immediately — don't wait for response
+    // Clear fields and show confirmation after short delay
     setTimeout(() => {
       form.querySelectorAll('input, textarea').forEach(el => el.value = '');
       form.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
@@ -952,7 +940,6 @@
         btn.style.background = '';
         btn.style.fontSize = '';
         btn.style.boxShadow = '';
-        btn.disabled = false;
       }, 8000);
     }, 800);
   }
