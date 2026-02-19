@@ -858,8 +858,7 @@
   <h2 class="section-title">Ready to move your business forward?</h2>
   <p class="section-sub">Fill in the form and we'll be in touch within one business day.</p>
 
-  <form class="contact-form" name="contact" method="POST" data-netlify="true" onsubmit="handleSubmit(event)" action="/">
-    <input type="hidden" name="form-name" value="contact" />
+  <form class="contact-form" onsubmit="handleSubmit(event)">
     <div class="form-row">
       <div class="form-group">
         <label>Your Name</label>
@@ -889,10 +888,6 @@
     <div class="form-group">
       <label>Tell us about your project</label>
       <textarea placeholder="Briefly describe your business and what you need..."></textarea>
-    </div>
-    <div class="form-group" style="flex-direction:row; align-items:center; gap:0.75rem;">
-      <input type="checkbox" id="sendCopy" name="send-copy" value="yes" style="width:18px;height:18px;accent-color:var(--green-light);cursor:pointer;flex-shrink:0;border-radius:4px;" />
-      <label for="sendCopy" style="font-size:0.85rem;color:rgba(255,255,255,0.7);cursor:pointer;margin:0;">Send me a copy of this message</label>
     </div>
     <button type="submit" class="form-submit">Send Message →</button>
   </form>
@@ -928,47 +923,45 @@
     a.addEventListener('click', () => menu.classList.remove('open'));
   });
 
-  // Form submit handler
+  // Form submit handler - uses Formspree
   function handleSubmit(e) {
     e.preventDefault();
-    e.stopPropagation();
     const form = e.target;
     const btn = form.querySelector('.form-submit');
-    const sendCopy = form.querySelector('#sendCopy').checked;
-    const userEmail = form.querySelector('input[type="email"]').value;
 
-    // Show loading state
     btn.textContent = 'Sending...';
     btn.disabled = true;
 
-    // Submit to Netlify via fetch (prevents page redirect)
-    const formData = new FormData(form);
-    fetch('/', {
+    const data = {
+      name:     form.querySelector('input[type="text"]').value,
+      email:    form.querySelector('input[type="email"]').value,
+      business: form.querySelectorAll('input[type="text"]')[1]?.value || '',
+      service:  form.querySelector('select').value,
+      message:  form.querySelector('textarea').value
+    };
+
+    fetch('https://formspree.io/f/xlgwlyjo', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams(formData).toString()
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(data)
     })
-    .then(() => {
-      // Clear all fields
-      form.querySelectorAll('input[type="text"], input[type="email"], textarea').forEach(el => el.value = '');
-      form.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
-      form.querySelector('#sendCopy').checked = false;
-
-      // Show success message
-      const copyNote = sendCopy ? ` A copy has been sent to ${userEmail}.` : '';
-      btn.textContent = `✓ Message Sent! We'll be in touch within one business day.${copyNote}`;
-      btn.style.background = '#16a34a';
-      btn.style.boxShadow = '0 4px 20px rgba(22,163,74,0.5)';
-      btn.style.fontSize = '0.82rem';
-
-      // Reset button after 8 seconds
-      setTimeout(() => {
-        btn.textContent = 'Send Message →';
-        btn.style.background = '';
-        btn.style.boxShadow = '';
-        btn.style.fontSize = '';
-        btn.disabled = false;
-      }, 8000);
+    .then(res => res.json())
+    .then(result => {
+      if (result.ok || result.next) {
+        form.querySelectorAll('input[type="text"], input[type="email"], textarea').forEach(el => el.value = '');
+        form.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+        btn.textContent = `✓ Message Sent! We'll be in touch within one business day.`;
+        btn.style.background = '#16a34a';
+        btn.style.fontSize = '0.82rem';
+        setTimeout(() => {
+          btn.textContent = 'Send Message →';
+          btn.style.background = '';
+          btn.style.fontSize = '';
+          btn.disabled = false;
+        }, 8000);
+      } else {
+        throw new Error('Form error');
+      }
     })
     .catch(() => {
       btn.textContent = '✗ Something went wrong. Please try again.';
@@ -979,7 +972,6 @@
         btn.style.background = '';
       }, 4000);
     });
-    return false;
   }
 
   // Simple scroll reveal
