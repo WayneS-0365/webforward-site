@@ -859,7 +859,7 @@
   <p class="section-sub">Fill in the form and we'll be in touch within one business day.</p>
 
   <iframe name="hidden-form" style="display:none;"></iframe>
-  <form class="contact-form" action="https://formspree.io/f/xlgwlyjo" method="POST" target="hidden-form" onsubmit="handleSubmit(this)">
+  <form class="contact-form" id="contactForm" action="https://formspree.io/f/xlgwlyjo" method="POST" target="hidden-form">
     <div class="form-row">
       <div class="form-group">
         <label>Your Name</label>
@@ -890,7 +890,7 @@
       <label>Tell us about your project</label>
       <textarea name="message" placeholder="Briefly describe your business and what you need..."></textarea>
     </div>
-    <button type="submit" class="form-submit">Send Message →</button>
+    <button type="button" class="form-submit" onclick="handleSubmit()">Send Message →</button>
   </form>
 </section>
 
@@ -925,23 +925,35 @@
   });
 
   // Form submit handler
-  function handleSubmit(form) {
+  function handleSubmit() {
+    const form = document.getElementById('contactForm');
     const btn = form.querySelector('.form-submit');
-    // Clear fields and show confirmation after short delay
+    const name = form.querySelector('input[name="name"]').value.trim();
+    const email = form.querySelector('input[name="email"]').value.trim();
+
+    // Basic validation
+    if (!name || !email) {
+      alert('Please fill in your name and email address.');
+      return;
+    }
+
+    // Submit the form to hidden iframe
+    form.submit();
+
+    // Show confirmation immediately
+    form.querySelectorAll('input, textarea').forEach(el => el.value = '');
+    form.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+    btn.textContent = "✓ Message sent! We'll be in touch within one business day.";
+    btn.style.background = '#16a34a';
+    btn.style.fontSize = '0.82rem';
+    btn.style.boxShadow = '0 4px 20px rgba(22,163,74,0.5)';
+
     setTimeout(() => {
-      form.querySelectorAll('input, textarea').forEach(el => el.value = '');
-      form.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
-      btn.textContent = "✓ Message sent! We'll be in touch within one business day.";
-      btn.style.background = '#16a34a';
-      btn.style.fontSize = '0.82rem';
-      btn.style.boxShadow = '0 4px 20px rgba(22,163,74,0.5)';
-      setTimeout(() => {
-        btn.textContent = 'Send Message →';
-        btn.style.background = '';
-        btn.style.fontSize = '';
-        btn.style.boxShadow = '';
-      }, 8000);
-    }, 800);
+      btn.textContent = 'Send Message →';
+      btn.style.background = '';
+      btn.style.fontSize = '';
+      btn.style.boxShadow = '';
+    }, 8000);
   }
 
   // Simple scroll reveal
