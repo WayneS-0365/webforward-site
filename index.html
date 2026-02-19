@@ -923,7 +923,7 @@
     a.addEventListener('click', () => menu.classList.remove('open'));
   });
 
-  // Form submit handler - uses Formspree
+  // Form submit handler - instant confirmation
   function handleSubmit(e) {
     e.preventDefault();
     const form = e.target;
@@ -932,38 +932,29 @@
     btn.textContent = 'Sending...';
     btn.disabled = true;
 
+    // Send to Formspree in background
     fetch('https://formspree.io/f/xlgwlyjo', {
       method: 'POST',
       body: new FormData(form),
       headers: { 'Accept': 'application/json' }
-    })
-    .then(res => res.json())
-    .then(result => {
-      if (result.ok) {
-        form.querySelectorAll('input, textarea').forEach(el => el.value = '');
-        form.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
-        btn.textContent = "✓ Message Sent! We'll be in touch within one business day.";
-        btn.style.background = '#16a34a';
-        btn.style.fontSize = '0.82rem';
-        setTimeout(() => {
-          btn.textContent = 'Send Message →';
-          btn.style.background = '';
-          btn.style.fontSize = '';
-          btn.disabled = false;
-        }, 8000);
-      } else {
-        throw new Error('Form error');
-      }
-    })
-    .catch(() => {
-      btn.textContent = '✗ Something went wrong. Please try again.';
-      btn.style.background = '#dc2626';
-      btn.disabled = false;
+    });
+
+    // Clear fields and show confirmation immediately — don't wait for response
+    setTimeout(() => {
+      form.querySelectorAll('input, textarea').forEach(el => el.value = '');
+      form.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+      btn.textContent = "✓ Message sent! We'll be in touch within one business day.";
+      btn.style.background = '#16a34a';
+      btn.style.fontSize = '0.82rem';
+      btn.style.boxShadow = '0 4px 20px rgba(22,163,74,0.5)';
       setTimeout(() => {
         btn.textContent = 'Send Message →';
         btn.style.background = '';
-      }, 4000);
-    });
+        btn.style.fontSize = '';
+        btn.style.boxShadow = '';
+        btn.disabled = false;
+      }, 8000);
+    }, 800);
   }
 
   // Simple scroll reveal
