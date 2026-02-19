@@ -758,8 +758,8 @@
     <div class="price-card">
       <div class="plan-badge">Starter</div>
       <div class="plan-name">Basic Presence</div>
-      <div class="plan-price">R499</div>
-      <div class="plan-period">per month</div>
+      <div class="plan-price">R399</div>
+      <div class="plan-period">per month + R2,000 once-off build fee</div>
       <ul class="plan-features">
         <li>Up to 5-page website</li>
         <li>Domain registration included</li>
@@ -774,8 +774,8 @@
     <div class="price-card featured">
       <div class="plan-badge">Most Popular</div>
       <div class="plan-name">Business Pro</div>
-      <div class="plan-price">R999</div>
-      <div class="plan-period">per month</div>
+      <div class="plan-price">R899</div>
+      <div class="plan-period">per month + R3,500 once-off build fee</div>
       <ul class="plan-features">
         <li>Up to 15-page website</li>
         <li>Domain + email hosting</li>
@@ -791,8 +791,8 @@
     <div class="price-card">
       <div class="plan-badge">Enterprise</div>
       <div class="plan-name">Full Managed</div>
-      <div class="plan-price">Custom</div>
-      <div class="plan-period">tailored to you</div>
+      <div class="plan-price">Quote</div>
+      <div class="plan-period">on request — tailored to your needs</div>
       <ul class="plan-features">
         <li>Unlimited pages</li>
         <li>E-commerce / bookings</li>
@@ -901,12 +901,12 @@
     <li><a href="#how">How It Works</a></li>
     <li><a href="#pricing">Pricing</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="mailto:hello@webforward.co.za">hello@webforward.co.za</a></li>
+    <li><a href="/cdn-cgi/l/email-protection#147c7178787b54637176727b66637566703a777b3a6e75"><span class="__cf_email__" data-cfemail="c1a9a4adadae81b6a4a3a7aeb3b6a0b3a5efa2aeefbba0">[email&#160;protected]</span></a></li>
   </ul>
   <div class="footer-copy">© 2025 WebForward. All rights reserved. | Professional Web Solutions for South African Businesses</div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // Navbar scroll effect
   const navbar = document.getElementById('navbar');
   window.addEventListener('scroll', () => {
@@ -926,10 +926,21 @@
   // Form submit handler
   function handleSubmit(e) {
     e.preventDefault();
-    const btn = e.target.querySelector('.form-submit');
+    const form = e.target;
+    const btn = form.querySelector('.form-submit');
+    // Clear all fields
+    form.querySelectorAll('input, textarea').forEach(el => el.value = '');
+    form.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+    // Show success message
     btn.textContent = '✓ Message Sent! We\'ll be in touch soon.';
     btn.style.background = '#16a34a';
     btn.disabled = true;
+    // Reset button after 5 seconds
+    setTimeout(() => {
+      btn.textContent = 'Send Message →';
+      btn.style.background = '';
+      btn.disabled = false;
+    }, 5000);
   }
 
   // Simple scroll reveal
@@ -937,15 +948,4 @@
     entries.forEach(e => {
       if (e.isIntersecting) {
         e.target.style.animation = 'fadeUp 0.6s ease forwards';
-        observer.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.1 });
-
-  document.querySelectorAll('.service-card, .step, .price-card, .why-item').forEach(el => {
-    el.style.opacity = '0';
-    observer.observe(el);
-  });
-</script>
-</body>
-</html>
+        ob
